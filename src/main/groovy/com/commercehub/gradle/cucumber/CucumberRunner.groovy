@@ -50,7 +50,8 @@ class CucumberRunner {
                 args << options.snippets
                 args << featureFile.absolutePath
 
-                JavaExecAction runner = new DefaultJavaExecAction(new BaseDirFileResolver(FileSystems.getDefault(), options.baseDir))
+                JavaExecAction runner =
+                        new DefaultJavaExecAction(new BaseDirFileResolver(FileSystems.default, options.baseDir))
                 runner.setMain('cucumber.api.cli.Main')
                 runner.setClasspath(sourceSet.runtimeClasspath)
                 runner.setArgs(args)
