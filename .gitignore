@@ -1,0 +1,55 @@
+# compiled sources
+*.class
+
+# built packages
+*.jar
+*.dmg
+*.gz
+*.zip
+*.tar
+*.rar
+*.7z
+*.iso
+
+# logs
+*.log
+
+# OS generated files
+.DS_Store*
+ehthumbs.d
+Icon?
+Thumbs.db
+
+# editor files
+#~
+#.swp
+
+# Gradle
+.gradle
+local.properties
+build
+*/build
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ
+out
+.idea
+*.ipr
+*.iws
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings
+.metadata
+.factorypath
+.generated
+
+# misc IDE/build
+/target
+**/test-output
+**/target
+**/bin
+.m2
+*.hprof

@@ -1,0 +1,72 @@
+plugins {
+    id 'groovy'
+    id 'codenarc'
+    id 'net.saliman.cobertura' version '2.2.8'
+    id 'idea'
+    id 'maven-publish'
+}
+
+repositories {
+    maven {
+        url "http://repo.bodar.com"
+    }
+    jcenter()
+}
+
+dependencies {
+    compile gradleApi()
+
+    compile 'org.codehaus.gpars:gpars:1.2.1'
+    compile 'net.masterthought:cucumber-reporting:0.0.24'
+
+    testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    testCompile 'com.netflix.nebula:nebula-test:2.2.1'
+}
+
+codenarc {
+    configFile = rootProject.file('codenarcrule.groovy')
+    reportFormat = System.properties['codeNarcOutput'] ?: 'html'
+}
+
+cobertura {
+    coverageIgnoreTrivial = true
+}
+
+test {
+    finalizedBy coberturaReport
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// add javadoc/source jar tasks as artifacts
+artifacts {
+    archives sourcesJar, javadocJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            artifact javadocJar {
+                classifier "javadoc"
+            }
+
+            pom.withXml {
+                def Node root = asNode()
+            }
+        }
+    }
+}
