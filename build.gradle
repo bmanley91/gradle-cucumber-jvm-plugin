@@ -7,9 +7,6 @@ plugins {
 }
 
 repositories {
-    maven {
-        url "http://repo.bodar.com"
-    }
     jcenter()
 }
 
@@ -17,7 +14,6 @@ dependencies {
     compile gradleApi()
 
     compile 'org.codehaus.gpars:gpars:1.2.1'
-    compile 'net.masterthought:cucumber-reporting:0.0.24'
 
     testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
     testCompile 'com.netflix.nebula:nebula-test:2.2.1'
