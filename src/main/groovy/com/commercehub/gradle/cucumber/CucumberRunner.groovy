@@ -2,11 +2,7 @@ package com.commercehub.gradle.cucumber
 
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
-import org.gradle.api.internal.file.BaseDirFileResolver
 import org.gradle.api.tasks.SourceSet
-import org.gradle.internal.nativeintegration.services.FileSystems
-import org.gradle.process.internal.DefaultJavaExecAction
-import org.gradle.process.internal.JavaExecAction
 
 /**
  * Created by jgelais on 6/16/15.
@@ -27,6 +23,8 @@ class CucumberRunner {
         GParsPool.withPool(options.maxParallelForks) {
             features.files.eachParallel { File featureFile ->
                 File resultsFile = new File(resultsDir, "${featureFile.name}.json")
+                File consoleOutLogFile = new File(resultsDir, "${featureFile.name}-out.log")
+                File consoleErrLogFile = new File(resultsDir, "${featureFile.name}-err.log")
 
                 List<String> args = []
                 args << '--glue'
@@ -50,12 +48,14 @@ class CucumberRunner {
                 args << options.snippets
                 args << featureFile.absolutePath
 
-                JavaExecAction runner =
-                        new DefaultJavaExecAction(new BaseDirFileResolver(FileSystems.default, options.baseDir))
-                runner.setMain('cucumber.api.cli.Main')
-                runner.setClasspath(sourceSet.runtimeClasspath)
-                runner.setArgs(args)
-                runner.execute()
+                int exitCode =  new JavaProcessLauncher('cucumber.api.cli.Main', sourceSet.runtimeClasspath.toList())
+                        .setArgs(args)
+                        .setConsoleOutLogFile(consoleOutLogFile)
+                        .setConsoleErrLogFile(consoleErrLogFile)
+                        .execute()
+                if (exitCode != 0) {
+                    log.error("FAILED feature: ${featureFile.name}")
+                }
             }
         }
     }

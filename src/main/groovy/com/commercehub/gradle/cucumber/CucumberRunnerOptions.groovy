@@ -20,6 +20,4 @@ interface CucumberRunnerOptions {
     String getSnippets()
 
     int getMaxParallelForks()
-
-    File getBaseDir()
 }

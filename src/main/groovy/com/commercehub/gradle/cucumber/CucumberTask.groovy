@@ -78,8 +78,4 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
     String getSnippets() {
         return snippets ?: extension.snippets
     }
-
-    File getBaseDir() {
-        return project.rootDir
-    }
 }
