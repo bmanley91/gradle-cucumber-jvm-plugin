@@ -15,9 +15,10 @@ class CucumberRunner {
         this.options = options
     }
 
-    def run(SourceSet sourceSet, File resultsDir) {
+    boolean run(SourceSet sourceSet, File resultsDir, File reportsDir) {
+        boolean isPassing = true
         def features = sourceSet.resources.matching {
-            include('**/*.feature')
+            include("${options.featureRoot}/**/*.feature")
         }
         log.info("Found ${features.files.size()} features.")
         GParsPool.withPool(options.maxParallelForks) {
@@ -55,8 +56,11 @@ class CucumberRunner {
                         .execute()
                 if (exitCode != 0) {
                     log.error("FAILED feature: ${featureFile.name}")
+                    isPassing = false
                 }
             }
         }
+
+        return isPassing
     }
 }

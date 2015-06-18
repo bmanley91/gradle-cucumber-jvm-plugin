@@ -1,8 +1,11 @@
 package com.commercehub.gradle.cucumber
 
+import net.masterthought.cucumber.ReportBuilder
 import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskAction
+import org.gradle.logging.ConsoleRenderer
 
 /**
  * Created by jgelais on 6/11/15.
@@ -26,7 +29,12 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
     @TaskAction
     void runTests() {
         CucumberRunner runner = new CucumberRunner(this)
-        runner.run(sourceSet, createResultsDir())
+        boolean isPassing = runner.run(sourceSet, resultsDir, reportsDir)
+        generateReport()
+
+        if (!isPassing) {
+            handleTestFailures()
+        }
     }
 
     @SuppressWarnings('ConfusingMethodName')
@@ -34,13 +42,51 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
         this.sourceSet = sourceSet
     }
 
-    private File createResultsDir() {
+    private void generateReport() {
+        List<String> jsonReportFiles = []
+        resultsDir.eachFileMatch(~/^.*\.json$/) {
+            jsonReportFiles << it.absolutePath
+        }
+        ReportBuilder reportBuilder = new ReportBuilder(
+                jsonReportFiles,
+                reportsDir,
+                '',
+                '',
+                project.name,
+                false,
+                false,
+                true,
+                false,
+                false,
+                '',
+                true,
+                false
+        )
+        reportBuilder.generateReports()
+    }
+
+    File getResultsDir() {
         File projectResultsDir = (File) project.property('testResultsDir')
         File cucumberResults = new File(projectResultsDir, CUCUMBER_REPORTS_DIR)
         File sourceSetResults = new File(cucumberResults, sourceSet.name)
         sourceSetResults.mkdirs()
 
         return sourceSetResults
+    }
+
+    File getReportsDir() {
+        File projectReportsDir = (File) project.property('testReportDir')
+        File cucumberReports = new File(projectReportsDir, CUCUMBER_REPORTS_DIR)
+        File sourceSetReports = new File(cucumberReports, sourceSet.name)
+
+        return sourceSetReports
+    }
+
+    private void handleTestFailures() {
+        String reportUrl = new ConsoleRenderer().asClickableFileUrl(new File(reportsDir, 'feature-overview.html'))
+        String message = "There were failing tests. See the report at: $reportUrl"
+
+        throw new GradleException(message)
     }
 
     SourceSet getSourceSet() {
