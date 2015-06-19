@@ -2,7 +2,12 @@ package com.commercehub.gradle.cucumber
 
 import groovy.util.logging.Slf4j
 import groovyx.gpars.GParsPool
+import net.masterthought.cucumber.ReportParser
+import net.masterthought.cucumber.json.Feature
 import org.gradle.api.tasks.SourceSet
+
+import java.nio.file.Path
+import java.nio.file.Paths
 
 /**
  * Created by jgelais on 6/16/15.
@@ -10,22 +15,24 @@ import org.gradle.api.tasks.SourceSet
 @Slf4j
 class CucumberRunner {
     CucumberRunnerOptions options
+    CucumberTestResultCounter testResultCounter
 
-    CucumberRunner(CucumberRunnerOptions options) {
+    CucumberRunner(CucumberRunnerOptions options, CucumberTestResultCounter testResultCounter) {
         this.options = options
+        this.testResultCounter = testResultCounter
     }
 
     boolean run(SourceSet sourceSet, File resultsDir, File reportsDir) {
-        boolean isPassing = true
         def features = sourceSet.resources.matching {
             include("${options.featureRoot}/**/*.feature")
         }
-        log.info("Found ${features.files.size()} features.")
+        testResultCounter.beforeSuite(features.files.size())
         GParsPool.withPool(options.maxParallelForks) {
             features.files.eachParallel { File featureFile ->
-                File resultsFile = new File(resultsDir, "${featureFile.name}.json")
-                File consoleOutLogFile = new File(resultsDir, "${featureFile.name}-out.log")
-                File consoleErrLogFile = new File(resultsDir, "${featureFile.name}-err.log")
+                String featureName = getFeatureNameFromFile(featureFile, sourceSet)
+                File resultsFile = new File(resultsDir, "${featureName}.json")
+                File consoleOutLogFile = new File(resultsDir, "${featureName}-out.log")
+                File consoleErrLogFile = new File(resultsDir, "${featureName}-err.log")
 
                 List<String> args = []
                 args << '--glue'
@@ -49,18 +56,66 @@ class CucumberRunner {
                 args << options.snippets
                 args << featureFile.absolutePath
 
-                int exitCode =  new JavaProcessLauncher('cucumber.api.cli.Main', sourceSet.runtimeClasspath.toList())
+                new JavaProcessLauncher('cucumber.api.cli.Main', sourceSet.runtimeClasspath.toList())
                         .setArgs(args)
                         .setConsoleOutLogFile(consoleOutLogFile)
                         .setConsoleErrLogFile(consoleErrLogFile)
                         .execute()
-                if (exitCode != 0) {
-                    log.error("FAILED feature: ${featureFile.name}")
-                    isPassing = false
+                List<CucumberFeatureResult> results = parseFeatureResult(resultsFile).collect {
+                    log.debug("Logging result for $it.name")
+                    createResult(it)
+                }
+                results.each { CucumberFeatureResult result ->
+                    testResultCounter.afterFeature(result)
                 }
             }
         }
 
-        return isPassing
+        testResultCounter.afterSuite()
+        return !testResultCounter.hadFailures()
+    }
+
+    String getFeatureNameFromFile(File file, SourceSet sourceSet) {
+        String featureName = file.name
+        sourceSet.resources.srcDirs.each { File resourceDir ->
+            if (isFileChildOfDirectory(file, resourceDir)) {
+                featureName = convertPathToPackage(
+                        getReleativePath(file, resourceDir))[(options.featureRoot.length() + 1)..-1]
+            }
+        }
+
+        return featureName
+    }
+
+    List<Feature> parseFeatureResult(File jsonReport) {
+        return new ReportParser([jsonReport.absolutePath]).features[jsonReport.absolutePath]
+    }
+
+    CucumberFeatureResult createResult(Feature feature) {
+        feature.processSteps()
+        CucumberFeatureResult result = new CucumberFeatureResult(
+                totalScenarios: feature.numberOfScenarios,
+                failedScenarios: feature.numberOfScenariosFailed,
+                totalSteps: feature.numberOfSteps,
+                failedSteps: feature.numberOfFailures,
+                skippedSteps: feature.numberOfSkipped,
+                pendingSteps: feature.numberOfPending
+        )
+
+        return result
+    }
+
+    private String convertPathToPackage(Path path) {
+        return path.toString().replace(File.separator, '.')
+    }
+
+    private Path getReleativePath(File file, File dir) {
+        return Paths.get(dir.toURI()).relativize(Paths.get(file.toURI()))
+    }
+
+    private boolean isFileChildOfDirectory(File file, File dir) {
+        Path child = Paths.get(file.toURI())
+        Path parent = Paths.get(dir.toURI())
+        return child.startsWith(parent)
     }
 }

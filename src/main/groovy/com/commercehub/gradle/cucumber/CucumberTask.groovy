@@ -6,6 +6,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.TaskAction
 import org.gradle.logging.ConsoleRenderer
+import org.gradle.logging.ProgressLoggerFactory
 
 /**
  * Created by jgelais on 6/11/15.
@@ -28,7 +29,8 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
 
     @TaskAction
     void runTests() {
-        CucumberRunner runner = new CucumberRunner(this)
+        ProgressLoggerFactory progressLoggerFactory = services.get(ProgressLoggerFactory)
+        CucumberRunner runner = new CucumberRunner(this, new CucumberTestResultCounter(progressLoggerFactory, logger))
         boolean isPassing = runner.run(sourceSet, resultsDir, reportsDir)
         generateReport()
 
@@ -55,12 +57,14 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
                 project.name,
                 false,
                 false,
-                true,
+                false,
+                false,
+                false,
                 false,
                 false,
                 '',
-                true,
-                false
+                false,
+                true
         )
         reportBuilder.generateReports()
     }
