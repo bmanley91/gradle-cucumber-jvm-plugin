@@ -1,38 +1,70 @@
-Gradle Plugin Project template
-------------------------------
+# Gradle Cucumber-JVM Plugin
 
-You've just created a basic Gradle plugin project
+The gradle cucumber-jvm plugin provides the ability to run [cucumber](http://cukes.info) acceptance tests directly
+from a gradle build.  The plugin utilizes the cucumber cli provided by the [cucumber-jvm](https://github.com/cucumber/cucumber-jvm) 
+project, while imposing a few constraints to encourage adopters to use cucumber in a gradle friendly manner. Some of
+constraints include:
 
-The project's structure is laid out as follows
+*   A Cucumber test suite should be contained in a single source set
+*   Glue code should be compiled by gradle and use annotations to glue to the features
+*   Features should be in the resources folder of the source set representing the test suite.
+*   This plugin generates Cucumber reports based on [masterthought's Cucumber reporting project](https://github.com/masterthought/cucumber-reporting)
 
-    <proj>
-      |
-      +- src
-          |
-          +- main
-              |
-              +- groovy
-              |
-                 // plugin sources
-              |
-              +- resources
-              |
-                 // plugin resources
-          +- test
-              |
-              +- groovy
-              |
-                 // plugin tests
+The inspiration for this plugin drew heavily from the work of 
+[Samuel Brown's Cucumber Plugin](https://github.com/samueltbrown/gradle-cucumber-plugin) and 
+[Camilo Ribeiro's Cucumber Gradle Parallel Example](https://github.com/camiloribeiro/cucumber-gradle-parallel).
 
-Execute the following command to compile and package the project
+## Contributors
 
-    ./gradlew build
+ * [Jay St.Gelais](http://github.com/JayStGelais)
 
-Execute the following command to deploy to Artifactory
+## Using the plugin in your gradle build script
 
-    ./gradlew artifactoryPublish
 
-Execute the following command to deploy to Bintray
+The following gradle configuration will create a new Cucumber based test suite named *cucumberTest* and configure it 
+to run up to 3 parallel forks. The *cucumberTest* source set will depend on the project's main source set.
 
-    ./gradlew bintrayUpload
+    buildscript {
+        repositories {
+            maven {
+                url "http://repo.bodar.com"
+            }
+            mavenCentral()
+        }
+        dependencies {
+            classpath 'com.commercehub:gradle-cucumber-jvm-plugin:0.1'
+        }
+    }
+    apply plugin: 'java'            
+    apply plugin: 'cucumber-jvm'
+
+      
+    addCucumberSuite 'cucumberTest'
+      
+    cucumber {
+        maxParallelForks = 3
+    }
+    
+    cucumberTest {
+        stepDefinitionRoots = ['cucumber.steps', 'cucumber.hooks']
+    }
+
+Running the following command will execute the test suite:
+
+    gradle(w) cucumberTest
+
+
+## Cucumber Task Configuration
+
+Cucumber tasks can be configured at two levels, globally for the project and individually for a test suite. This allows
+for projects to contain multiple Cucumber test suites that can differ on some properties while inheriting other
+property values form the project defaults. BOth levels of configuration make the following settings available:
+
+* `stepDefinitionRoots`: A list of root packages to scan the classpath for glue code.
+* `featureRoots`: A list of root packages to scan the resources folders on the classpath for feature files.
+* `tags`: A list of tags to identify scenarios to run
+* `iStrict`: A boolean value indicating whether scenarios should be evaluated strictly.
+* `snippits`: Indicator to cucumber on what style to use for generated step examples. Legal values include camelcase, underscore.
+* `maxParallelForks`: Maximum number of forked Java processes to start to run tests in parallel.
+
 
