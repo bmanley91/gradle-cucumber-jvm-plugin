@@ -23,7 +23,7 @@ class CucumberExtension {
     /**
      *
      */
-    List<String> stepDefinitionRoots = ['cucumber']
+    List<String> stepDefinitionRoots = ['cucumber.steps', 'cucumber.hooks']
 
     /**
      *

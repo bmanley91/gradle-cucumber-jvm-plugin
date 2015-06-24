@@ -60,11 +60,11 @@ Cucumber tasks can be configured at two levels, globally for the project and ind
 for projects to contain multiple Cucumber test suites that can differ on some properties while inheriting other
 property values form the project defaults. BOth levels of configuration make the following settings available:
 
-* `stepDefinitionRoots`: A list of root packages to scan the classpath for glue code.
-* `featureRoots`: A list of root packages to scan the resources folders on the classpath for feature files.
-* `tags`: A list of tags to identify scenarios to run
-* `iStrict`: A boolean value indicating whether scenarios should be evaluated strictly.
-* `snippits`: Indicator to cucumber on what style to use for generated step examples. Legal values include camelcase, underscore.
-* `maxParallelForks`: Maximum number of forked Java processes to start to run tests in parallel.
+* `stepDefinitionRoots`: A list of root packages to scan the classpath for glue code. Default to **['cucumber.steps', 'cucumber.hooks']**
+* `featureRoots`: A list of root packages to scan the resources folders on the classpath for feature files. Defaults to **['features']**
+* `tags`: A list of tags to identify scenarios to run. Default to an empty list.
+* `iStrict`: A boolean value indicating whether scenarios should be evaluated strictly. Defaults to **false**
+* `snippits`: Indicator to cucumber on what style to use for generated step examples. Legal values include camelcase, underscore. Defaults to **camelcase**
+* `maxParallelForks`: Maximum number of forked Java processes to start to run tests in parallel. Default to **1**
 
 
