@@ -24,7 +24,9 @@ class CucumberRunner {
 
     boolean run(SourceSet sourceSet, File resultsDir, File reportsDir) {
         def features = sourceSet.resources.matching {
-            include("${options.featureRoot}/**/*.feature")
+            options.featureRoots.each {
+                include("${it}/**/*.feature")
+            }
         }
         testResultCounter.beforeSuite(features.files.size())
         GParsPool.withPool(options.maxParallelForks) {
@@ -35,8 +37,10 @@ class CucumberRunner {
                 File consoleErrLogFile = new File(resultsDir, "${featureName}-err.log")
 
                 List<String> args = []
-                args << '--glue'
-                args << options.stepDefinitionRoot
+                options.stepDefinitionRoots.each {
+                    args << '--glue'
+                    args << it
+                }
                 args << '--plugin'
                 args << "json:${resultsFile.absolutePath}"
                 if (options.isDryRun) {
@@ -79,8 +83,7 @@ class CucumberRunner {
         String featureName = file.name
         sourceSet.resources.srcDirs.each { File resourceDir ->
             if (isFileChildOfDirectory(file, resourceDir)) {
-                featureName = convertPathToPackage(
-                        getReleativePath(file, resourceDir))[(options.featureRoot.length() + 1)..-1]
+                featureName = convertPathToPackage(getReleativePath(file, resourceDir))
             }
         }
 

@@ -7,9 +7,9 @@ interface CucumberRunnerOptions {
 
     List<String> getTags()
 
-    String getStepDefinitionRoot()
+    List<String> getStepDefinitionRoots()
 
-    String getFeatureRoot()
+    List<String> getFeatureRoots()
 
     boolean getIsDryRun()
 

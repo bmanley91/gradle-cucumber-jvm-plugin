@@ -20,8 +20,8 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
 
     List<String> tags = null
     Integer maxParallelForks = null
-    String featureRoot = null
-    String stepDefinitionRoot = null
+    List<String> featureRoots = null
+    List<String> stepDefinitionRoots = null
     Boolean isDryRun = null
     Boolean isMonochrome = null
     Boolean isStrict = null
@@ -105,12 +105,12 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
         return maxParallelForks ?: extension.maxParallelForks
     }
 
-    String getStepDefinitionRoot() {
-        return stepDefinitionRoot ?: extension.stepDefinitionRoot
+    List<String> getStepDefinitionRoots() {
+        return stepDefinitionRoots ?: extension.stepDefinitionRoots
     }
 
-    String getFeatureRoot() {
-        return featureRoot ?: extension.featureRoot
+    List<String> getFeatureRoots() {
+        return featureRoots ?: extension.featureRoots
     }
 
     boolean getIsDryRun() {

@@ -23,12 +23,12 @@ class CucumberExtension {
     /**
      *
      */
-    String stepDefinitionRoot = 'cucumber'
+    List<String> stepDefinitionRoots = ['cucumber']
 
     /**
      *
      */
-    String featureRoot = 'features'
+    List<String> featureRoots = ['features']
 
     /**
      *
