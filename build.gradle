@@ -4,6 +4,8 @@ plugins {
     id 'net.saliman.cobertura' version '2.2.8'
     id 'idea'
     id 'maven-publish'
+    id 'net.researchgate.release' version '2.1.2'
+    id "com.jfrog.bintray" version "1.2"
 }
 
 repositories {
@@ -71,3 +73,17 @@ publishing {
         }
     }
 }
+
+bintray {
+    user = project.hasProperty("bintrayUserName") ? bintrayUserName : null
+    key = project.hasProperty("bintrayApiKey") ? bintrayApiKey : null
+    publications = ["mavenJava"]
+    pkg {
+        repo = "main"
+        userOrg = "commercehub-oss"
+        name = 'gradle-cucumber-jvm-plugin'
+        licenses = ["Apache-2.0"]
+    }
+}
+bintrayUpload.dependsOn build, sourcesJar, javadocJar
+createReleaseTag.dependsOn bintrayUpload
