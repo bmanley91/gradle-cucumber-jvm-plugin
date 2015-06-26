@@ -63,7 +63,7 @@ property values form the project defaults. BOth levels of configuration make the
 * `stepDefinitionRoots`: A list of root packages to scan the classpath for glue code. Default to **['cucumber.steps', 'cucumber.hooks']**
 * `featureRoots`: A list of root packages to scan the resources folders on the classpath for feature files. Defaults to **['features']**
 * `tags`: A list of tags to identify scenarios to run. Default to an empty list.
-* `iStrict`: A boolean value indicating whether scenarios should be evaluated strictly. Defaults to **false**
+* `isStrict`: A boolean value indicating whether scenarios should be evaluated strictly. Defaults to **false**
 * `snippits`: Indicator to cucumber on what style to use for generated step examples. Legal values include camelcase, underscore. Defaults to **camelcase**
 * `maxParallelForks`: Maximum number of forked Java processes to start to run tests in parallel. Default to **1**
 

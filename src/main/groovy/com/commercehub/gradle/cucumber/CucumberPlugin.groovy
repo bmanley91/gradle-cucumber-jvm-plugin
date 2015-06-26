@@ -2,6 +2,7 @@ package com.commercehub.gradle.cucumber
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.SourceSet
 
 /**
@@ -12,6 +13,8 @@ class CucumberPlugin implements Plugin<Project> {
     public static final String DEFAULT_PARENT_SOURCESET = 'main'
 
     void apply(Project project) {
+        project.plugins.apply(JavaPlugin)
+
         project.extensions.create('cucumber', CucumberExtension, project)
         project.metaClass.addCucumberSuite = { String sourceSetName ->
             SourceSet cucumberSuiteSourceSet =
