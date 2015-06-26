@@ -83,6 +83,7 @@ bintray {
         userOrg = "commercehub-oss"
         name = 'gradle-cucumber-jvm-plugin'
         licenses = ["Apache-2.0"]
+        vcsUrl = 'https://github.com/commercehub-oss/gradle-cucumber-jvm-plugin'
     }
 }
 bintrayUpload.dependsOn build, sourcesJar, javadocJar
