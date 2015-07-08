@@ -48,6 +48,14 @@ to run up to 3 parallel forks. The *cucumberTest* source set will depend on the 
     cucumberTest {
         stepDefinitionRoots = ['cucumber.steps', 'cucumber.hooks']
     }
+    
+    repositories {
+        jcenter()
+    }
+    
+    dependencies {
+        cucumberTestCompile 'info.cukes:cucumber-java:1.2.2'
+    }
 
 Running the following command will execute the test suite:
 
