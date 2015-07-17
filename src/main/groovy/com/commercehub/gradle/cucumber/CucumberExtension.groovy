@@ -50,6 +50,11 @@ class CucumberExtension {
      */
     String snippets = 'camelcase'
 
+    /**
+     * Property to enable/disable junit reporting
+     */
+    boolean junitReport = false
+
     private final Project project
 
     CucumberExtension(Project project) {

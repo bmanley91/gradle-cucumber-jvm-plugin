@@ -26,6 +26,7 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
     Boolean isMonochrome = null
     Boolean isStrict = null
     String snippets = null
+    boolean junitReport = null
 
     @TaskAction
     void runTests() {
@@ -127,5 +128,9 @@ class CucumberTask extends DefaultTask implements CucumberRunnerOptions {
 
     String getSnippets() {
         return snippets ?: extension.snippets
+    }
+
+    boolean getJunitReport() {
+        return junitReport ?: extension.junitReport
     }
 }

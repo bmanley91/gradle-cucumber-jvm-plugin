@@ -14,6 +14,8 @@ import java.nio.file.Paths
  */
 @Slf4j
 class CucumberRunner {
+    private static final String PLUGIN = '--plugin'
+
     CucumberRunnerOptions options
     CucumberTestResultCounter testResultCounter
 
@@ -35,14 +37,19 @@ class CucumberRunner {
                 File resultsFile = new File(resultsDir, "${featureName}.json")
                 File consoleOutLogFile = new File(resultsDir, "${featureName}-out.log")
                 File consoleErrLogFile = new File(resultsDir, "${featureName}-err.log")
+                File junitResultsFile = new File(resultsDir, "${featureName}.xml")
 
                 List<String> args = []
                 options.stepDefinitionRoots.each {
                     args << '--glue'
                     args << it
                 }
-                args << '--plugin'
+                args << PLUGIN
                 args << "json:${resultsFile.absolutePath}"
+                if (options.junitReport) {
+                    args << PLUGIN
+                    args << "junit:${junitResultsFile.absolutePath}"
+                }
                 if (options.isDryRun) {
                     args << '--dry-run'
                 }

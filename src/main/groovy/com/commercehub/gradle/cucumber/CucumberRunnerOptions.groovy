@@ -20,4 +20,6 @@ interface CucumberRunnerOptions {
     String getSnippets()
 
     int getMaxParallelForks()
+
+    boolean getJunitReport()
 }
