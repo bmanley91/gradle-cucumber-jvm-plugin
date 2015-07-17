@@ -66,7 +66,7 @@ Running the following command will execute the test suite:
 
 Cucumber tasks can be configured at two levels, globally for the project and individually for a test suite. This allows
 for projects to contain multiple Cucumber test suites that can differ on some properties while inheriting other
-property values form the project defaults. BOth levels of configuration make the following settings available:
+property values form the project defaults. Both levels of configuration make the following settings available:
 
 * `stepDefinitionRoots`: A list of root packages to scan the classpath for glue code. Default to **['cucumber.steps', 'cucumber.hooks']**
 * `featureRoots`: A list of root packages to scan the resources folders on the classpath for feature files. Defaults to **['features']**
@@ -75,4 +75,9 @@ property values form the project defaults. BOth levels of configuration make the
 * `snippits`: Indicator to cucumber on what style to use for generated step examples. Legal values include camelcase, underscore. Defaults to **camelcase**
 * `maxParallelForks`: Maximum number of forked Java processes to start to run tests in parallel. Default to **1**
 
+### Reporting
+
+By default, this plugin will generate reports based on [masterthought's Cucumber reporting project](https://github.com/masterthought/cucumber-reporting). 
+
+Junit reporting can be enabled by setting the `junitReport` property to true. 
 
